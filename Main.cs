@@ -1,87 +1,52 @@
-namespace NewGameProject;
 using Godot;
-using Godot.Collections;
 using System;
 
-public partial class Main : Node
+namespace NewGameProject
 {
-	private Lobby lobby;
-	private Button createServerButton;
-	private Button connectServerButton;
-	private LineEdit ipAddressInput;
+    public partial class Main : Node
+    {
+        private Button createServerButton;
+        private Button connectServerButton;
+        private LineEdit ipAddressInput;
 
-	public override void _Ready()
-	{
-		lobby = GetNode<Lobby>("Lobby");
+        public override void _Ready()
+        {
+            // Referenciar elementos da UI
+            var ui = GetNode<Control>("Control");
+            createServerButton = ui.GetNode<Button>("VBoxContainer/CreateServerButton");
+            connectServerButton = ui.GetNode<Button>("VBoxContainer/ConnectServerButton");
+            ipAddressInput = ui.GetNode<LineEdit>("VBoxContainer/IPAddressInput");
 
-		// Referenciar elementos da UI
-		var ui = GetNode<Control>("Control");
-		createServerButton = ui.GetNode<Button>("VBoxContainer/CreateServerButton");
-		connectServerButton = ui.GetNode<Button>("VBoxContainer/ConnectServerButton");
-		ipAddressInput = ui.GetNode<LineEdit>("VBoxContainer/IPAddressInput");
+            // Conectar sinais dos botões
+            createServerButton.Pressed += OnCreateServerPressed;
+            connectServerButton.Pressed += OnConnectServerPressed;
+        }
 
-		// Conectar sinais do Lobby para atualizar a UI ou lógica do jogo
-		lobby.PlayerConnected += OnPlayerConnected;
-		lobby.PlayerDisconnected += OnPlayerDisconnected;
-		lobby.ServerDisconnected += OnServerDisconnected;
+        private void OnCreateServerPressed()
+        {
+            // Define que este jogador será o servidor
+            GameSettings.Instance.IsServer = true;
 
-		// Conectar sinais dos botões usando eventos
-		createServerButton.Pressed += OnCreateServerPressed;
-		connectServerButton.Pressed += OnConnectServerPressed;
-	}
+            // Navega para a cena do Lobby
+            GetTree().ChangeSceneToFile("res://Scenes/Lobby.tscn");
+        }
 
-	// Método chamado quando o botão "Criar Servidor" é pressionado
-	private void OnCreateServerPressed()
-	{
-		Error error = lobby.CreateGame();
-		if (error == Error.Ok)
-		{
-			GD.Print("Servidor criado com sucesso.");
-		}
-		else
-		{
-			GD.Print("Erro ao criar servidor: ", error);
-		}
-	}
+        private void OnConnectServerPressed()
+        {
+            // Define que este jogador será um cliente
+            GameSettings.Instance.IsServer = false;
 
-	// Método chamado quando o botão "Conectar ao Servidor" é pressionado
-	private void OnConnectServerPressed()
-	{
-		string ipAddress = ipAddressInput.Text;
-		if (string.IsNullOrEmpty(ipAddress))
-		{
-			ipAddress = Lobby.DEFAULT_SERVER_IP; // IP padrão se nenhum for inserido
-		}
+            // Obtém o IP inserido pelo usuário
+            string ipAddress = ipAddressInput.Text;
+            if (string.IsNullOrEmpty(ipAddress))
+            {
+                ipAddress = GameSettings.DEFAULT_SERVER_IP;
+            }
 
-		Error error = lobby.JoinGame(ipAddress);
-		if (error == Error.Ok)
-		{
-			GD.Print("Conectado ao servidor.");
-		}
-		else
-		{
-			GD.Print("Erro ao conectar: ", error);
-		}
-	}
+            GameSettings.Instance.ServerIP = ipAddress;
 
-	// Manipulador para sinal de jogador conectado
-	private void OnPlayerConnected(int peerId, Dictionary playerInfo)
-	{
-		GD.Print($"Jogador conectado: {peerId} - {playerInfo["Name"]}");
-		// Atualize a UI ou lógica do jogo conforme necessário
-	}
-
-	// Manipulador para sinal de jogador desconectado
-	private void OnPlayerDisconnected(int peerId)
-	{
-		GD.Print($"Jogador desconectado: {peerId}");
-		// Atualize a UI ou lógica do jogo conforme necessário
-	}
-
-	// Manipulador para sinal de servidor desconectado
-	private void OnServerDisconnected()
-	{
-		GD.Print("Servidor desconectado.");
-		// Atualize a UI ou lógica do jogo conforme necessário
-	}
+            // Navega para a cena do Lobby
+            GetTree().ChangeSceneToFile("res://Scenes/Lobby.tscn");
+        }
+    }
 }

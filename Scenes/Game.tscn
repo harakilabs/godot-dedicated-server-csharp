@@ -4,3 +4,17 @@
 
 [node name="Game" type="Node"]
 script = ExtResource("1_ds126")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer"]
+offset_right = 537.0
+offset_bottom = 69.0
+
+[node name="ChatHistory" type="TextEdit" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+editable = false
+
+[node name="ChatInput" type="LineEdit" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+text = "Digite sua mensagem..."
