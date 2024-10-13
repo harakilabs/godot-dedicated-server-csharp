@@ -1,8 +1,9 @@
 ﻿using Godot;
+using NewGameProject.Client;
 using System;
 using static Godot.MultiplayerApi;
 
-namespace NewGameProject
+namespace NewGameProject.Gameplay
 {
     public partial class Game : Node
     {

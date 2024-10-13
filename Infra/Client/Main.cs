@@ -1,7 +1,8 @@
+// Main.cs
 using Godot;
 using System;
 
-namespace NewGameProject
+namespace NewGameProject.Client
 {
     public partial class Main : Node
     {
@@ -12,10 +13,9 @@ namespace NewGameProject
         public override void _Ready()
         {
             // Referenciar elementos da UI
-            var ui = GetNode<Control>("Control");
-            createServerButton = ui.GetNode<Button>("VBoxContainer/CreateServerButton");
-            connectServerButton = ui.GetNode<Button>("VBoxContainer/ConnectServerButton");
-            ipAddressInput = ui.GetNode<LineEdit>("VBoxContainer/IPAddressInput");
+            createServerButton = GetNode<Button>("Control/VBoxContainer/CreateServerButton");
+            connectServerButton = GetNode<Button>("Control/VBoxContainer/ConnectServerButton");
+            ipAddressInput = GetNode<LineEdit>("Control/VBoxContainer/IPAddressInput");
 
             // Conectar sinais dos botões
             createServerButton.Pressed += OnCreateServerPressed;
@@ -27,8 +27,8 @@ namespace NewGameProject
             // Define que este jogador será o servidor
             GameSettings.Instance.IsServer = true;
 
-            // Navega para a cena do Lobby
-            GetTree().ChangeSceneToFile("res://Scenes/Lobby.tscn");
+            // Navega para a cena DedicatedServer
+            GetTree().ChangeSceneToFile("res://Scenes/DedicatedServer.tscn");
         }
 
         private void OnConnectServerPressed()
@@ -45,7 +45,7 @@ namespace NewGameProject
 
             GameSettings.Instance.ServerIP = ipAddress;
 
-            // Navega para a cena do Lobby
+            // Navega para a cena ClientLobby
             GetTree().ChangeSceneToFile("res://Scenes/Lobby.tscn");
         }
     }

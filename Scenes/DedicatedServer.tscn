@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dbqxls8wpw76n"]
+
+[ext_resource type="Script" path="res://Infra/Server/DedicatedServer.cs" id="1_7flnm"]
+
+[node name="DedicatedServer" type="Node"]
+script = ExtResource("1_7flnm")
