@@ -27,8 +27,8 @@ namespace NewGameProject.Client
             // Define que este jogador será o servidor
             GameSettings.Instance.IsServer = true;
 
-            // Navega para a cena DedicatedServer
-            GetTree().ChangeSceneToFile("res://Scenes/DedicatedServer.tscn");
+            // Navega para a cena ServerLobby
+            GetTree().ChangeSceneToFile("res://Infra/Server/ServerLobby.tscn");
         }
 
         private void OnConnectServerPressed()
@@ -46,7 +46,7 @@ namespace NewGameProject.Client
             GameSettings.Instance.ServerIP = ipAddress;
 
             // Navega para a cena ClientLobby
-            GetTree().ChangeSceneToFile("res://Scenes/Lobby.tscn");
+            GetTree().ChangeSceneToFile("res://Infra/Scenes/ClientLobby.tscn");
         }
     }
 }

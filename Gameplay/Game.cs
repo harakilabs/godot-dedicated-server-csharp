@@ -19,7 +19,7 @@ namespace NewGameProject.Gameplay
             if (!Multiplayer.IsServer())
             {
                 GD.Print($"[Cliente {Multiplayer.GetUniqueId()}] Informando ao servidor que a cena do jogo foi carregada.");
-                Lobby.Instance.RpcId(1, nameof(Lobby.PlayerLoaded));
+                ClientLobby.Instance.RpcId(1, nameof(ClientLobby.PlayerLoaded));
             }
 
             // Conectando o sinal 'ChatMessageReceived' ao método 'OnChatMessageReceived'
@@ -42,7 +42,7 @@ namespace NewGameProject.Gameplay
             {
                 GD.Print($"Enviando mensagem de chat: {new_text}");
                 // Envia a mensagem para o servidor
-                Lobby.Instance.RpcId(1, nameof(Lobby.ReceiveChatMessage), new_text);
+                ClientLobby.Instance.RpcId(1, nameof(ClientLobby.ReceiveChatMessage), new_text);
                 chatInput.Text = "";
             }
         }

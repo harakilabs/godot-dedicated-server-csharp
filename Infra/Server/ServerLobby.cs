@@ -1,14 +1,16 @@
-// DedicatedServer.cs
+// ServerLobby.cs
 using Godot;
 using NewGameProject.Gameplay;
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
 using static Godot.MultiplayerApi;
 using GDictionary = Godot.Collections.Dictionary;
 
 namespace NewGameProject.Server
 {
-	public partial class DedicatedServer : Node
+	public partial class ServerLobby : Node
 	{
 		[Signal]
 		public delegate void PlayerConnectedEventHandler(int peerId, GDictionary playerInfo);
@@ -24,7 +26,6 @@ namespace NewGameProject.Server
 
 		private Dictionary<int, GDictionary> players = new Dictionary<int, GDictionary>();
 		private List<int> playerOrder = new List<int>();
-		private Button startGameButton;
 
 		public override void _Ready()
 		{
@@ -38,14 +39,51 @@ namespace NewGameProject.Server
 			if (error != Error.Ok)
 			{
 				GD.PrintErr("[server] Error creating server: ", error);
+				EmitSignal(nameof(ServerStatusChanged), "Error starting the server.");
 				return;
 			}
 
 			Multiplayer.MultiplayerPeer = peer;
 
+			// Retrieve and log the server's IP addresses
+			string serverIPs = GetLocalIPAddresses();
+			GD.Print($"[server] Server started on IP(s): {serverIPs} and Port: {PORT}");
+
+			EmitSignal(nameof(ServerStatusChanged), $"Server started on IP(s): {serverIPs} and Port: {PORT}");
+
 			// Connect multiplayer events
 			Multiplayer.PeerConnected += OnPeerConnected;
 			Multiplayer.PeerDisconnected += OnPeerDisconnected;
+		}
+
+		private string GetLocalIPAddresses()
+		{
+			string ips = "";
+			try
+			{
+				var host = Dns.GetHostEntry(Dns.GetHostName());
+				foreach (var ip in host.AddressList)
+				{
+					if (ip.AddressFamily == AddressFamily.InterNetwork)
+					{
+						if (!string.IsNullOrEmpty(ips))
+						{
+							ips += ", ";
+						}
+						ips += ip.ToString();
+					}
+				}
+				if (string.IsNullOrEmpty(ips))
+				{
+					ips = "127.0.0.1";
+				}
+			}
+			catch (Exception ex)
+			{
+				GD.PrintErr($"[server] Error retrieving IP addresses: {ex.Message}");
+				ips = "Unknown";
+			}
+			return ips;
 		}
 
 		private void OnPeerConnected(long peerId)
@@ -74,7 +112,7 @@ namespace NewGameProject.Server
 
 			if (playerOrder.Count == 0)
 			{
-				startGameButton.Visible = false;
+				GD.Print("[server] No players remaining.");
 			}
 			else if (playerOrder.Count >= 1)
 			{
@@ -83,18 +121,16 @@ namespace NewGameProject.Server
 			}
 		}
 
-		[Rpc(RpcMode.Authority, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+		[Rpc(RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
 		public void SetFirstPlayerStatus(bool isFirstPlayer)
 		{
 			if (isFirstPlayer)
 			{
-				GD.Print($"[server] Peer {Multiplayer.GetUniqueId()} is the first player. Enabling the start game button.");
-				startGameButton.Visible = true;
+				GD.Print("[server] Peer is the first player. Enabling the start game functionality.");
 			}
 			else
 			{
-				GD.Print($"[server] Peer {Multiplayer.GetUniqueId()} is not the first player.");
-				startGameButton.Visible = false;
+				GD.Print("[server] Peer is not the first player.");
 			}
 		}
 
@@ -103,6 +139,13 @@ namespace NewGameProject.Server
 		{
 			GD.Print($"[server] New player registered with ID: {newPlayerId}");
 			// Notify all clients about the new player if needed
+		}
+
+		public void StartGame()
+		{
+			string gameScenePath = "res://Scenes/Game.tscn"; // Adjust the path as necessary
+			Rpc(nameof(LoadGame), gameScenePath);
+			GD.Print("[server] StartGame RPC called.");
 		}
 
 		[Rpc(RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
