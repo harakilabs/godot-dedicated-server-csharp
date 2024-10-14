@@ -1,6 +1,5 @@
 // ServerLobby.cs
 using Godot;
-using NewGameProject.Gameplay;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -10,7 +9,7 @@ using GDictionary = Godot.Collections.Dictionary;
 
 namespace NewGameProject.Server
 {
-	public partial class ServerLobby : Node
+    public partial class ServerLobby : Node
 	{
 		[Signal]
 		public delegate void PlayerConnectedEventHandler(int peerId, GDictionary playerInfo);
@@ -153,20 +152,6 @@ namespace NewGameProject.Server
 		{
 			GD.Print($"[server] Loading game scene: {gameScenePath}");
 			GetTree().ChangeSceneToFile(gameScenePath);
-		}
-
-		[Rpc(RpcMode.Authority, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-		public void ReceiveChatMessage(string message)
-		{
-			if (Multiplayer.IsServer())
-			{
-				GD.Print($"[server] Message received from client {Multiplayer.GetRemoteSenderId()}: {message}");
-
-				foreach (Node gameNode in GetTree().GetNodesInGroup("Game"))
-				{
-					gameNode.Rpc(nameof(Game.ReceiveBroadcastMessage), message);
-				}
-			}
 		}
 	}
 }

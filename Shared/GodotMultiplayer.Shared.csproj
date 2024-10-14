@@ -6,4 +6,9 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RootNamespace>GodotMultiplayer.Shared</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="GodotMultiplayer.Shared">
+      <HintPath>.godot\mono\temp\bin\Debug\GodotMultiplayer.Shared.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>
