@@ -1,5 +1,6 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
-/Builds/
+/Client/Builds/
+/Server/Builds/
 .vs/

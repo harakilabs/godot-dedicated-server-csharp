@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "New Game Project": {
+    "GodotMultiplayerClient": {
       "commandName": "Project"
     },
     "Start in Godot": {
